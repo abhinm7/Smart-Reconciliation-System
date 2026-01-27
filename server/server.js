@@ -1,19 +1,30 @@
+require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
 const connectDB = require('./config/db');
 
-require('dotenv').config();
-const PORT = process.env.PORT;
+const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-app.use(express.json());
-
 connectDB();
 
-app.get('/',(req,res)=>{
+app.use(express.json());
+app.use(cors());
+app.use(helmet());
+app.use(morgan('dev'));
+
+app.get('/', (req, res) => {
     res.send("server is on");
 });
 
-app.listen(PORT,() => {
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
+
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
     console.log("server started on port:", PORT)
 });
