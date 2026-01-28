@@ -5,11 +5,11 @@ const uploadFile = async (req, res) => {
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
-
+        
         // save it to db
         const job = await Upload.create({
-            fileName: req.fileName,
-            filePath: req.filePath,
+            fileName: req.file.filename,
+            filePath: req.file.path,
             uploadedBy: req.user._id,
             type: req.body.type || 'RECONCILIATION',
             status: 'pending'

@@ -31,7 +31,7 @@ const uploadSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    errorLog: [string]
+    errorLog: [String]
 }, { timestamps: true });
 
 const Upload = mongoose.model('Upload', uploadSchema);
