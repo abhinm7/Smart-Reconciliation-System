@@ -1,7 +1,7 @@
 const fs = require('fs');
 const csv = require('csv-parser');
-const Upload = require('../models/Upload');
-const Record = require('../models/Record');
+const Upload = require('../../models/Upload');
+const Record = require('../../models/Record');
 
 const processSystemData = async (filePath, jobId) => {
     try {

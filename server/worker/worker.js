@@ -3,7 +3,8 @@ const { Worker } = require('bullmq');
 const connectDB = require('../config/db');
 const Upload = require('../models/Upload');
 const { connection } = require('../config/redis');
-const { processSystemData } = require('./processors');
+const { processSystemData } = require('./processors/processor');
+const { processReconciliation } = require('./processors/reconciliationProcessers');
 
 connectDB();
 
@@ -14,12 +15,12 @@ const workHandler = async (job) => {
     try {
         await Upload.findByIdAndUpdate(jobId, { status: 'processing' });
 
-        
+
         if (type === 'SYSTEM_DATA') {
             console.log(`SYSTEM_DATA found`);
             await processSystemData(filePath, jobId); // adding system records
         } else if (type === 'RECONCILIATION') {
-            console.log("Reconciliation logic coming soon..."); // reconcillation
+            await processReconciliation(filePath, jobId);// reconcillation records
         }
 
         await Upload.findByIdAndUpdate(jobId, { status: 'completed' });
