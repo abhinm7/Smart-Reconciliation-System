@@ -1,11 +1,12 @@
 const Upload = require('../models/Upload');
+const { fileQueue } = require('../worker/queue');
 
 const uploadFile = async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: 'No file uploaded' });
         }
-        
+
         // save it to db
         const job = await Upload.create({
             fileName: req.file.filename,
@@ -13,6 +14,13 @@ const uploadFile = async (req, res) => {
             uploadedBy: req.user._id,
             type: req.body.type || 'RECONCILIATION',
             status: 'pending'
+        });
+
+        // assign job asynchronously
+        await fileQueue.add('process-file', {
+            jobId: job._id,
+            filePath: req.file.path,
+            type: job.type
         });
 
         res.status(201).json({
