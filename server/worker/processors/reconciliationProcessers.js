@@ -8,63 +8,71 @@ const MATCHING_RULES = {
     variancePercentage: 2.0, // ±2%
 };
 
-const processReconciliation = (filePath, jobId) => {
-    return new Promise((resolve, reject) => {
-        let batch = [];
-        let count = 0;
-        const batch_length = 1000;
-        const seenIds = new Set();
+const processReconciliation = async (filePath, jobId) => {
+    try {
+        const total = await countLines(filePath);
+        console.log(`Total records detected: ${total}`);
+        await Upload.findByIdAndUpdate(jobId, { totalRecords: total });
 
-        const stream = fs.createReadStream(filePath).pipe(csv())
-            .on('data', (data) => {
-                const rowId = data.TransactionID;
+        return new Promise((resolve, reject) => {
+            let batch = [];
+            let count = 0;
+            const batch_length = 1000;
+            const seenIds = new Set();
 
-                // save duplicates immediately
-                if (seenIds.has(rowId)) {
-                    count++;
-                    saveSingleResult({
-                        jobId,
-                        uploadedTransactionId: rowId,
-                        uploadedAmount: parseFloat(data.Amount),
-                        status: 'DUPLICATE',
-                        notes: 'Duplicate ID found within uploaded file'
+            const stream = fs.createReadStream(filePath).pipe(csv())
+                .on('data', (data) => {
+                    const rowId = data.TransactionID;
+
+                    // save duplicates immediately
+                    if (seenIds.has(rowId)) {
+                        count++;
+                        saveSingleResult({
+                            jobId,
+                            uploadedTransactionId: rowId,
+                            uploadedAmount: parseFloat(data.Amount),
+                            status: 'DUPLICATE',
+                            notes: 'Duplicate ID found within uploaded file'
+                        });
+                        return;
+                    }
+                    seenIds.add(rowId);
+
+                    batch.push({
+                        id: data.TransactionID,
+                        amount: parseFloat(data.Amount),
+                        ref: data.ReferenceNumber
                     });
-                    console.log("duplicate entry :", count);
-                    return;
-                }
-                seenIds.add(rowId);
 
-                batch.push({
-                    id: data.TransactionID,
-                    amount: parseFloat(data.Amount),
-                    ref: data.ReferenceNumber
-                });
-
-                if (batch.length >= batch_length) {
-                    stream.pause();
-                    processBatch(batch, jobId).then(() => {
+                    if (batch.length >= batch_length) {
+                        stream.pause();
+                        processBatch(batch, jobId).then(() => {
+                            count += batch.length;
+                            Upload.findByIdAndUpdate(jobId, { processedRecords: count }).exec();
+                            batch = [];
+                            console.log("current status :", count);
+                            stream.resume();
+                        }).catch(err => {
+                            stream.destroy(err)
+                        });
+                    }
+                })
+                .on('end', async () => {
+                    if (batch.length > 0) {
+                        await processBatch(batch, jobId);
                         count += batch.length;
-                        Upload.findByIdAndUpdate(jobId, { processedRecords: count }).exec();
-                        batch = [];
-                        console.log("current status :", count);
-                        stream.resume();
-                    }).catch(err => {
-                        stream.destroy(err)
-                    });
-                }
-            })
-            .on('end', async () => {
-                if (batch.length > 0) {
-                    await processBatch(batch, jobId);
-                    count += batch.length;
-                }
-                console.log(`Reconciliation Complete. Processed ${count} rows.`);
-                resolve(count);
-            })
-            .on('error', (error) => {
-                reject(error);
-            })
-    })
+                    }
+                    console.log(`Reconciliation Complete. Processed ${count} rows.`);
+                    resolve(count);
+                })
+                .on('error', (error) => {
+                    reject(error);
+                })
+        })
+    }
+    catch (error) {
+        throw error
+    }
 }
 
 const processBatch = async (csvRows, jobId) => {
