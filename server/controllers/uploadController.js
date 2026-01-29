@@ -1,4 +1,5 @@
 const Upload = require('../models/Upload');
+const { logAudit } = require('../utils/auditlogger');
 const { fileQueue } = require('../worker/queue');
 
 const uploadFile = async (req, res) => {

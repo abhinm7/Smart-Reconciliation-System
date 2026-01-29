@@ -63,6 +63,7 @@ const processReconciliation = async (filePath, jobId) => {
                     if (batch.length > 0) {
                         await processBatch(batch, jobId);
                         count += batch.length;
+                        Upload.findByIdAndUpdate(jobId, { processedRecords: count }).exec();
                     }
                     console.log(`Reconciliation Complete. Processed ${count} rows.`);
                     resolve(count);

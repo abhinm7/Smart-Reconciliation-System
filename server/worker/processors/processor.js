@@ -53,6 +53,8 @@ const processSystemData = async (filePath, jobId) => {
                 // process leftovers
                 if (results.length > 0) {
                     await Record.bulkWrite(results);
+                    await Upload.findByIdAndUpdate(jobId, { processedRecords: count }).exec();
+                    count += results.length;
                 }
                 resolve(count);
             }).on('error', (err) => {

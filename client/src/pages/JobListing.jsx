@@ -91,7 +91,7 @@ const JobListing = () => {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
           
                     {/* {job.processedRecords} / {job.totalRecords || '?'} */}
-                        { Math.floor((job.processedRecords/job.totalRecords)*100) }
+                        { Math.floor((job.processedRecords/job.totalRecords)*100) }%
                 
 
                   </td>
