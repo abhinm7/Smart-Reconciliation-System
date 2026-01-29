@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import API from "../api/api";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@company.com");
+  const [password, setPassword] = useState("123");
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -13,7 +13,7 @@ const Login = () => {
     try {
       const { data } = await API.post("/auth/login", { email, password });
       localStorage.setItem("user", JSON.stringify(data));
-      navigate("/upload");
+      navigate("/dashboard");
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     }
