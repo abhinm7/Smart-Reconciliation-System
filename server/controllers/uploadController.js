@@ -45,4 +45,15 @@ const uploadFile = async (req, res) => {
     }
 }
 
-module.exports = { uploadFile };
+const getJobs = async (req, res) => {
+    try {
+        const jobs = await Upload.find({ uploadedBy: req.user._id })
+            .sort({ createdAt: -1 });
+        
+        res.json(jobs);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+module.exports = { uploadFile, getJobs };
