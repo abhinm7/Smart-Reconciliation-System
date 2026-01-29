@@ -23,6 +23,15 @@ const uploadFile = async (req, res) => {
             type: job.type
         });
 
+        // log audit for creation
+        await logAudit({
+            req,
+            action: 'UPLOAD_FILE',
+            collection: 'UploadJob',
+            docId: job._id,
+            oldValue: null,
+            newValue: job.toObject()
+        });
         res.status(201).json({
             message: 'File uploaded succesfully',
             jobId: job._id

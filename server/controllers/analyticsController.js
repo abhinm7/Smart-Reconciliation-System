@@ -2,6 +2,44 @@ const mongoose = require('mongoose');
 const ReconciliationResult = require("../models/ReconciliationResult");
 const Upload = require("../models/Upload");
 const Record = require('../models/Record');
+const { logAudit } = require('../utils/auditlogger');
+
+const editReconciliationResult = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { uploadedAmount, uploadedTransactionId, notes } = req.body;
+        const oldResult = await ReconciliationResult.findById(id).lean();
+
+        if (!oldResult) {
+            return res.status(404).json({ message: 'Record not found' });
+        }
+        // update changes
+        const newResult = await ReconciliationResult.findByIdAndUpdate(
+            id,
+            {
+                uploadedAmount: uploadedAmount || oldResult.uploadedAmount,
+                uploadedTransactionId: uploadedTransactionId || oldResult.uploadedTransactionId,
+                status: 'MANUAL_MATCH',
+                notes: notes || 'Manually corrected by user'
+            },
+            { new: true }
+        );
+        // add audit for changes
+        await logAudit({
+            req,
+            action: 'MANUAL_CORRECTION',
+            collection: 'ReconciliationResult',
+            docId: id,
+            oldValue: oldResult,
+            newValue: newResult.toObject()
+        });
+
+        res.json(newResult);
+
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
 
 const getJobSummary = async (req, res) => {
     try {
@@ -66,4 +104,4 @@ const getJobDetails = async (req, res) => {
     }
 }
 
-module.exports = { getJobSummary, getJobDetails };
+module.exports = { getJobSummary, getJobDetails, editReconciliationResult };

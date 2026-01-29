@@ -8,7 +8,7 @@ const ResultSchema = new mongoose.Schema({
     systemAmount: { type: Number },
     status: {
         type: String,
-        enum: ['MATCHED', 'UNMATCHED', 'PARTIAL_MATCH','DUPLICATE'],
+        enum: ['MATCHED', 'UNMATCHED', 'PARTIAL_MATCH', 'DUPLICATE', 'MANUAL_MATCH'],
         required: true
     },
     variance: { type: Number, default: 0 }

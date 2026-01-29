@@ -3,15 +3,17 @@ const csv = require('csv-parser');
 const Upload = require('../../models/Upload');
 const Record = require('../../models/Record');
 const ReconciliationResult = require('../../models/ReconciliationResult');
+const { countLines } = require('./utils');
 
 const MATCHING_RULES = {
-    variancePercentage: 2.0, // ±2%
+    variancePercentage: 2.0, 
 };
 
 const processReconciliation = async (filePath, jobId) => {
     try {
         const total = await countLines(filePath);
         console.log(`Total records detected: ${total}`);
+
         await Upload.findByIdAndUpdate(jobId, { totalRecords: total });
 
         return new Promise((resolve, reject) => {

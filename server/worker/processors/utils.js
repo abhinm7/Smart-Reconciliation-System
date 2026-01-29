@@ -1,3 +1,5 @@
+const fs = require('fs');
+
 const countLines = (filePath) => {
     return new Promise((resolve, reject) => {
         let lines = 0;
