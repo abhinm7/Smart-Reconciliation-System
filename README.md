@@ -18,10 +18,10 @@ A full-stack automated reconciliation dashboard that processes bank statements, 
 * Single Tenant: The application is designed for single-organization use.
 ### Trade-offs :
 * #### Polling vs. WebSockets:
-  **Decision**: Used 2-second interval polling for job status.
+  **Decision**: Used 2-second interval polling for job status.<br>
   *Why* : Significantly reduces infrastructure overhead and complexity while maintaining a highly responsive UX for typical file processing times.
 * #### Background Workers (BullMQ): 
-  **Decision** : Offloaded parsing to a separate worker process.
+  **Decision** : Offloaded parsing to a separate worker process.<br>
   *Why*: Ensures the main API remains responsive and prevents request timeouts during heavy data reconciliation tasks.
 ### Limitations
 * **Audit Snapshot**: User data (email/name) is snapshotted into the audit log. While this preserves history, live profile links would break if a user is deleted from the system.
