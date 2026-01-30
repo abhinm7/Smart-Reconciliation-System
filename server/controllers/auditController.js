@@ -38,4 +38,18 @@ const getRecordHistory = async (req, res) => {
   }
 };
 
-module.exports = { getAuditLogs, getRecordHistory };
+// const getJobActivity = async (req, res) => {
+//   try {
+//     const { jobId } = req.params;
+//     const logs = await AuditLog.find({ newValue:jobId })
+//       .sort({ createdAt: -1 })
+//       .limit(10)
+//       .populate('user', 'name');
+
+//     res.json(logs);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+module.exports = { getAuditLogs, getRecordHistory, getJobActivity };

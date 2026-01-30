@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import JobListing from "./pages/JobListing";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Upload from "./pages/Upload";
+import ResultsDashboard from "./pages/ResultsDashboard";
 
 function App() {
   return (
@@ -35,7 +36,7 @@ function App() {
           path="/dashboard/:jobId"
           element={
             <ProtectedRoute>
-              <h1>Results Page (Coming Soon)</h1>
+              <ResultsDashboard />
             </ProtectedRoute>
           }
         />
