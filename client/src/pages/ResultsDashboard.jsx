@@ -95,7 +95,7 @@ const ResultsDashboard = () => {
         </div>
 
         <div className="flex bg-gray-200 p-1 rounded-lg">
-          {["ALL", "UNMATCHED", "MATCHED", "PARTIAL_MATCH"].map((s) => (
+          {["ALL", "UNMATCHED", "MATCHED", "PARTIAL_MATCH","MANUAL_MATCH"].map((s) => (
             <button
               key={s}
               onClick={() => {

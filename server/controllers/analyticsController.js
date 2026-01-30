@@ -13,14 +13,20 @@ const editReconciliationResult = async (req, res) => {
         if (!oldResult) {
             return res.status(404).json({ message: 'Record not found' });
         }
+
+        const newAmount = uploadedAmount !== undefined ? Number(uploadedAmount) : oldResult.uploadedAmount;
+        const newTxnId = uploadedTransactionId || oldResult.uploadedTransactionId;
+        const newVariance = newAmount - (oldResult.systemAmount || 0);
+
         // update changes
         const newResult = await ReconciliationResult.findByIdAndUpdate(
             id,
             {
-                uploadedAmount: uploadedAmount || oldResult.uploadedAmount,
-                uploadedTransactionId: uploadedTransactionId || oldResult.uploadedTransactionId,
+                uploadedAmount: newAmount,
+                uploadedTransactionId: newTxnId,
                 status: 'MANUAL_MATCH',
-                notes: notes || 'Manually corrected by user'
+                notes: notes || 'Manually corrected by user',
+                variance: newVariance
             },
             { new: true }
         );

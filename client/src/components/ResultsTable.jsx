@@ -59,7 +59,7 @@ const ResultsTable = ({ data, onEdit, onViewHistory }) => {
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-bold uppercase 
                     ${
-                      row.status === "MATCHED"
+                      row.status === "MATCHED"||row.status == 'MANUAL_MATCH'
                         ? "bg-green-100 text-green-800"
                         : isMismatch
                           ? "bg-red-100 text-red-800"
