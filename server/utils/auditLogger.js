@@ -1,6 +1,6 @@
 const AuditLog = require("../models/AuditLog");
 
-const logAudit = async ({ req, action, collection, oldValue, newValue, docId }) => {
+const logAudit = async ({ req, action, collection, oldValue, newValue, docId, notes }) => {
     try {
         await AuditLog.create({
             user: req?.user?._id || null,
@@ -8,7 +8,8 @@ const logAudit = async ({ req, action, collection, oldValue, newValue, docId }) 
             collectionName: collection,
             oldValue,
             newValue,
-            documentId: docId
+            documentId: docId,
+            notes
         });
 
     } catch (error) {

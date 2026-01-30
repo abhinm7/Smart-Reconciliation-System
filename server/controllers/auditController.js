@@ -28,7 +28,7 @@ const getRecordHistory = async (req, res) => {
     const { docId } = req.params;
 
     const logs = await AuditLog.find({ documentId: docId })
-      .populate('user', 'name')
+      .populate('user', 'email')
       .sort({ createdAt: -1 });
 
     res.json(logs);
@@ -52,4 +52,4 @@ const getRecordHistory = async (req, res) => {
 //   }
 // };
 
-module.exports = { getAuditLogs, getRecordHistory, getJobActivity };
+module.exports = { getAuditLogs, getRecordHistory };

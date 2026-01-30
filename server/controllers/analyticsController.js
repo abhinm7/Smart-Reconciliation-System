@@ -31,7 +31,8 @@ const editReconciliationResult = async (req, res) => {
             collection: 'ReconciliationResult',
             docId: id,
             oldValue: oldResult,
-            newValue: newResult.toObject()
+            newValue: newResult.toObject(),
+            notes
         });
 
         res.json(newResult);

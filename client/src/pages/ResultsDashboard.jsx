@@ -5,12 +5,15 @@ import SummaryCards from "../components/SummaryCards";
 import ResultsTable from "../components/ResultsTable";
 import EditModal from "../components/EditModal";
 import StatusChart from "../components/StatusChart";
+import VarianceChart from "../components/VarianceChart";
+import AuditTimeline from "../components/AuditTimeLine";
 
 const ResultsDashboard = () => {
   const { jobId } = useParams();
   const [summary, setSummary] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [historyId, setHistoryId] = useState(null);
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -106,7 +109,7 @@ const ResultsDashboard = () => {
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="lg:col-span-2">
           <SummaryCards
             stats={summary?.stats}
@@ -114,7 +117,15 @@ const ResultsDashboard = () => {
             statusFilter={setStatusFilter}
             setPage={setPage}
           />
-          <div className="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-lg">
+        </div>
+        <div className="lg:col-span-1 h-full">
+          {summary && <StatusChart stats={summary.stats} />}
+        </div>
+        <div className="h-full flex flex-col justify-between">
+          <div className="h-80">
+            {summary && <VarianceChart stats={summary.stats} />}
+          </div>
+          <div className=" bg-blue-50 border border-blue-200 p-4 rounded-lg">
             <h4 className="font-bold text-blue-800"> Quick Insight</h4>
             <p className="text-sm text-blue-600">
               You have{" "}
@@ -133,9 +144,6 @@ const ResultsDashboard = () => {
             </p>
           </div>
         </div>
-        <div className="lg:col-span-1 h-full">
-          {summary && <StatusChart stats={summary.stats} />}
-        </div>
       </div>
 
       <div className="relative">
@@ -144,8 +152,19 @@ const ResultsDashboard = () => {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
           </div>
         )}
-        <ResultsTable data={tableData} onEdit={handleEditClick} />
+        <ResultsTable
+          data={tableData}
+          onEdit={handleEditClick}
+          onViewHistory={(id) => setHistoryId(id)}
+        />
       </div>
+
+      {historyId && (
+        <AuditTimeline
+          recordId={historyId}
+          onClose={() => setHistoryId(null)}
+        />
+      )}
 
       <div className="mt-6 flex justify-between items-center">
         <button
